@@ -3,9 +3,9 @@
 // This program and the accompanying materials are made available under the
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
-import * as types from 'open-collaboration-protocol';
-import { DisposableCollection, Deferred } from 'open-collaboration-protocol';
-import { LOCAL_ORIGIN, OpenCollaborationYjsProvider } from 'open-collaboration-yjs';
+import * as types from '@hereugo/open-collaboration-protocol';
+import { DisposableCollection, Deferred, encodeUserPermission, getUserPermissionKey, resolveReadonly } from '@hereugo/open-collaboration-protocol';
+import { LOCAL_ORIGIN, OpenCollaborationYjsProvider } from '@hereugo/open-collaboration-yjs';
 import * as Y from 'yjs';
 import { Mutex } from 'async-mutex';
 import * as awarenessProtocol from 'y-protocols/awareness';
@@ -17,6 +17,8 @@ export class CollaborationInstance implements types.Disposable{
     protected peers = new Map<string, types.Peer>();
     protected hostInfo = new Deferred<types.Peer>();
     protected peerInfo: types.Peer;
+    protected _permissions: types.Permissions = { readonly: false };
+    protected effectiveReadonly = false;
 
     protected yjsProvider?: OpenCollaborationYjsProvider;
     protected YjsDoc: Y.Doc;
@@ -91,7 +93,10 @@ export class CollaborationInstance implements types.Disposable{
                     host: await this.identity.promise,
                     guests: Array.from(this.peers.values()),
                     capabilities: {},
-                    permissions: { readonly: false },
+                    permissions: {
+                        ...this._permissions,
+                        [getUserPermissionKey(peer.id)]: encodeUserPermission(true)
+                    },
                     workspace: {
                         name: workspace.name ?? 'Collaboration',
                         folders: workspace.folders ?? []
@@ -101,14 +106,25 @@ export class CollaborationInstance implements types.Disposable{
             }
         });
 
+        currentConnection.room.onPermissions((_, permissions) => {
+            void this.applyPermissionsUpdate(permissions);
+        });
+
         currentConnection.peer.onInit((_, initData) => {
             this.peers.set(initData.host.id, initData.host);
             this.hostInfo.resolve(initData.host);
             for (const guest of initData.guests) {
                 this.peers.set(guest.id, guest);
             }
+            void this.applyPermissionsUpdate(initData.permissions);
             this.communicationHandler.sendNotification(OnInitNotification, initData);
         });
+    }
+
+    private async applyPermissionsUpdate(permissions: types.Permissions): Promise<void> {
+        this._permissions = permissions;
+        const peer = await this.identity.promise;
+        this.effectiveReadonly = resolveReadonly(permissions, peer.id);
     }
 
     async registerYjsObject(type: string, documentPath: string, text: string) {
@@ -153,6 +169,9 @@ export class CollaborationInstance implements types.Disposable{
     }
 
     updateYjsObjectContent(documentPath: string, changes: TextDocumentInsert[]) {
+        if (this.effectiveReadonly) {
+            return;
+        }
         if (changes.length === 0) {
             return;
         }

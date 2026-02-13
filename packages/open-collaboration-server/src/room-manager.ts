@@ -8,7 +8,7 @@ import { inject, injectable } from 'inversify';
 import { CredentialsManager } from './credentials-manager.js';
 import { MessageRelay } from './message-relay.js';
 import { Peer, Room, User, isUser } from './types.js';
-import { Messages, BroadcastMessage, NotificationMessage, RequestMessage, ResponseMessage, isObject, Info, Event, Disposable, Emitter, JoinRoomResponse, JoinRoomPollResponse, JoinResponse } from 'open-collaboration-protocol';
+import { Messages, BroadcastMessage, NotificationMessage, RequestMessage, ResponseMessage, isObject, Info, Event, Disposable, Emitter, JoinRoomResponse, JoinRoomPollResponse, JoinResponse } from '@hereugo/open-collaboration-protocol';
 import { Logger } from './utils/logging.js';
 
 export interface PreparedRoom {

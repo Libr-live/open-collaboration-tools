@@ -4,6 +4,6 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-export type { Peer } from 'open-collaboration-protocol';
-export type { User } from 'open-collaboration-protocol';
-export type { AuthMetadata } from 'open-collaboration-protocol';
+export type { Peer } from '@hereugo/open-collaboration-protocol';
+export type { User } from '@hereugo/open-collaboration-protocol';
+export type { AuthMetadata } from '@hereugo/open-collaboration-protocol';

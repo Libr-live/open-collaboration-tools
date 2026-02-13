@@ -6,7 +6,7 @@
 
 import * as monaco from 'monaco-editor';
 import { monacoCollab } from './monaco-api.js';
-import { User } from 'open-collaboration-protocol';
+import { User } from '@hereugo/open-collaboration-protocol';
 
 const value = `function sayHello(): string {
     return "Hello";

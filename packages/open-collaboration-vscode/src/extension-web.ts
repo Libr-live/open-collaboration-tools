@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import 'reflect-metadata';
-import { initializeProtocol } from 'open-collaboration-protocol';
+import { initializeProtocol } from '@hereugo/open-collaboration-protocol';
 import { CollaborationInstance } from './collaboration-instance.js';
 import { closeSharedEditors, removeWorkspaceFolders } from './utils/workspace.js';
 import { createContainer } from './inversify.js';

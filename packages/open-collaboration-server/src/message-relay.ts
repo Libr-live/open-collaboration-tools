@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import { inject, injectable } from 'inversify';
-import { Deferred, EncryptedBroadcastMessage, BroadcastMessage, Message, UnknownRequestMessage, UnknownResponseMessage, UnknownResponseErrorMessage, UnknownNotificationMessage, UnknownBroadcastMessage } from 'open-collaboration-protocol';
+import { Deferred, EncryptedBroadcastMessage, BroadcastMessage, Message, UnknownRequestMessage, UnknownResponseMessage, UnknownResponseErrorMessage, UnknownNotificationMessage, UnknownBroadcastMessage } from '@hereugo/open-collaboration-protocol';
 import { Peer } from './types.js';
 import { nanoid } from 'nanoid';
 import { Logger } from './utils/logging.js';

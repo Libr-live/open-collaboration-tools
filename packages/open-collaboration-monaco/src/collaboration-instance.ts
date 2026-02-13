@@ -4,12 +4,12 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { Deferred, DisposableCollection, ProtocolBroadcastConnection } from 'open-collaboration-protocol';
+import { Deferred, DisposableCollection, ProtocolBroadcastConnection, encodeUserPermission, getUserPermissionKey, resolveReadonly } from '@hereugo/open-collaboration-protocol';
 import * as Y from 'yjs';
 import * as monaco from 'monaco-editor';
 import * as awarenessProtocol from 'y-protocols/awareness';
-import * as types from 'open-collaboration-protocol';
-import { LOCAL_ORIGIN, OpenCollaborationYjsProvider, YTextChange, YTextChangeDelta } from 'open-collaboration-yjs';
+import * as types from '@hereugo/open-collaboration-protocol';
+import { LOCAL_ORIGIN, OpenCollaborationYjsProvider, YTextChange, YTextChangeDelta } from '@hereugo/open-collaboration-yjs';
 import { createMutex } from 'lib0/mutex';
 import { debounce } from 'lodash';
 import { MonacoCollabCallbacks } from './monaco-api.js';
@@ -43,6 +43,8 @@ export class CollaborationInstance implements Disposable {
     protected readonly decorations = new Map<DisposablePeer, monaco.editor.IEditorDecorationsCollection>();
     protected readonly usersChangedCallbacks: UsersChangeEvent[] = [];
     protected readonly fileNameChangeCallbacks: FileNameChangeEvent[] = [];
+    protected _permissions: types.Permissions = { readonly: false };
+    protected effectiveReadonly = false;
 
     protected currentPath?: string;
     protected stopPropagation = false;
@@ -138,7 +140,10 @@ export class CollaborationInstance implements Disposable {
                 host: await this.identity.promise,
                 guests: Array.from(this.peers.values()).map(e => e.peer),
                 capabilities: {},
-                permissions: { readonly: false },
+                permissions: {
+                    ...this._permissions,
+                    [getUserPermissionKey(peer.id)]: encodeUserPermission(true)
+                },
                 workspace: {
                     name: this.workspaceName,
                     folders: [this.workspaceName]
@@ -165,6 +170,24 @@ export class CollaborationInstance implements Disposable {
         this.connection.peer.onInit(async (_, initData) => {
             await this.initialize(initData);
         });
+
+        this.connection.room.onPermissions((_, permissions) => {
+            void this.applyPermissionsUpdate(permissions);
+        });
+    }
+
+    private async applyPermissionsUpdate(permissions: types.Permissions): Promise<void> {
+        this._permissions = permissions;
+        const peer = await this.identity.promise;
+        const readonly = resolveReadonly(permissions, peer.id);
+        this.effectiveReadonly = readonly;
+        this.updateEditorReadonly(readonly);
+    }
+
+    private updateEditorReadonly(readonly: boolean): void {
+        if (this.options.editor) {
+            this.options.editor.updateOptions({ readOnly: readonly });
+        }
     }
 
     private setupFileSystemHandlers(): void {
@@ -225,6 +248,7 @@ export class CollaborationInstance implements Disposable {
 
     setEditor(editor: monaco.editor.IStandaloneCodeEditor): void {
         this.options.editor = editor;
+        this.updateEditorReadonly(this.effectiveReadonly);
         this.registerEditorEvents();
     }
 
@@ -475,6 +499,9 @@ export class CollaborationInstance implements Disposable {
     }
 
     protected updateTextDocument(event: monaco.editor.IModelContentChangedEvent, document: monaco.editor.ITextModel): void {
+        if (this.effectiveReadonly) {
+            return;
+        }
         const path = this.currentPath;
         if (path) {
             this.yjsMutex(() => {
@@ -627,6 +654,7 @@ export class CollaborationInstance implements Disposable {
         for (const peer of [data.host, ...data.guests]) {
             this.peers.set(peer.id, new DisposablePeer(this.yjsAwareness, peer));
         }
+        await this.applyPermissionsUpdate(data.permissions);
         this.workspaceName = data.workspace.name;
         this.notifyUsersChanged();
     }

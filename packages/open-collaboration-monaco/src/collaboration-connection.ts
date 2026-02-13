@@ -4,7 +4,7 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { ConnectionProvider, CreateRoomResponse, JoinRoomResponse, stringifyError } from 'open-collaboration-protocol';
+import { ConnectionProvider, CreateRoomResponse, JoinRoomResponse, stringifyError } from '@hereugo/open-collaboration-protocol';
 import { CollaborationInstance } from './collaboration-instance.js';
 import { MonacoCollabCallbacks } from './monaco-api.js';
 

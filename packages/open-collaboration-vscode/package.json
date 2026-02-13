@@ -68,7 +68,7 @@
       "properties": {
         "oct.serverUrl": {
           "type": "string",
-          "default": "https://api.open-collab.tools/",
+          "default": "https://oct.dev.libr.live/",
           "description": "%oct.serverUrl%"
         },
         "oct.alwaysAskToOverrideServerUrl": {
@@ -283,8 +283,8 @@
     "async-mutex": "~0.5.0",
     "inversify": "~6.2.2",
     "reflect-metadata": "~0.2.2",
-    "open-collaboration-yjs": "0.3.1",
-    "open-collaboration-protocol": "0.3.1",
+    "@hereugo/open-collaboration-yjs": "0.3.1",
+    "@hereugo/open-collaboration-protocol": "0.3.1",
     "lodash": "~4.17.21",
     "nanoid": "~5.1.5",
     "node-fetch": "~3.3.2",

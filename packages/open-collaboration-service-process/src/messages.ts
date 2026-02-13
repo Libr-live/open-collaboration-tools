@@ -3,8 +3,8 @@
 // This program and the accompanying materials are made available under the
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
-import * as types from 'open-collaboration-protocol';
-import { Encoding } from 'open-collaboration-protocol';
+import * as types from '@hereugo/open-collaboration-protocol';
+import { Encoding } from '@hereugo/open-collaboration-protocol';
 import { NotificationType, NotificationType2, NotificationType3, RequestType } from 'vscode-jsonrpc';
 
 export function isOCPMessage(message: unknown): message is OCPMessage {

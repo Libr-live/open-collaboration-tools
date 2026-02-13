@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import * as vscode from 'vscode';
-import { ConnectionProvider, stringifyError } from 'open-collaboration-protocol';
+import { ConnectionProvider, stringifyError } from '@hereugo/open-collaboration-protocol';
 import { CollaborationInstance, CollaborationInstanceFactory } from './collaboration-instance.js';
 import { CollaborationUri, RoomUri } from './utils/uri.js';
 import { inject, injectable } from 'inversify';

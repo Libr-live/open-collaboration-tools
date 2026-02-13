@@ -4,7 +4,7 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import type * as types from 'open-collaboration-protocol';
+import type * as types from '@hereugo/open-collaboration-protocol';
 import { CloseSessionRequest, CreateRoomRequest, fromEncodedOCPMessage, InternalError, JoinRoomRequest,
     LoginRequest, OCPBroadCast, OCPNotification, OCPRequest, OpenDocument,
     SessionData, UpdateDocumentContent, UpdateTextSelection } from './messages.js';

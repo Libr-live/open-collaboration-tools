@@ -1,5 +1,5 @@
 {
-  "name": "open-collaboration-monaco",
+  "name": "@hereugo/open-collaboration-monaco",
   "version": "0.3.3",
   "license": "MIT",
   "description": "Connect a single Monaco Editor to an Open Collaboration Tools session",
@@ -35,8 +35,8 @@
   },
   "dependencies": {
     "lodash": "~4.17.21",
-    "open-collaboration-protocol": "~0.3.1",
-    "open-collaboration-yjs": "~0.3.0"
+    "@hereugo/open-collaboration-protocol": "~0.3.1",
+    "@hereugo/open-collaboration-yjs": "~0.3.0"
   },
   "devDependencies": {
     "@types/vscode": "^1.89.0"

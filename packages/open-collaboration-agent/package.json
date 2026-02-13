@@ -1,5 +1,5 @@
 {
-  "name": "open-collaboration-agent",
+  "name": "@hereugo/open-collaboration-agent",
   "version": "0.3.0",
   "license": "MIT",
   "description": "AI agent for the Open Collaboration Tools project",
@@ -36,8 +36,8 @@
     "ai": "^4.3.14",
     "commander": "~13.1.0",
     "dotenv": "^16.5.0",
-    "open-collaboration-protocol": "~0.3.0",
-    "open-collaboration-yjs": "~0.3.0"
+    "@hereugo/open-collaboration-protocol": "~0.3.0",
+    "@hereugo/open-collaboration-yjs": "~0.3.0"
   },
   "keywords": [
     "collaboration",

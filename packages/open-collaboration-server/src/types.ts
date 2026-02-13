@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import { Channel, TransportChannel } from './channel.js';
-import * as protocol from 'open-collaboration-protocol';
+import * as protocol from '@hereugo/open-collaboration-protocol';
 
 export class Room {
 

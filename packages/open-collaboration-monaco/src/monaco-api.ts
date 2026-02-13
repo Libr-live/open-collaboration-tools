@@ -4,9 +4,9 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { ConnectionProvider, SocketIoTransportProvider } from 'open-collaboration-protocol';
+import { ConnectionProvider, SocketIoTransportProvider } from '@hereugo/open-collaboration-protocol';
 import { CollaborationInstance, UsersChangeEvent, FileNameChangeEvent } from './collaboration-instance.js';
-import * as types from 'open-collaboration-protocol';
+import * as types from '@hereugo/open-collaboration-protocol';
 import { createRoom, joinRoom, login } from './collaboration-connection.js';
 import * as monaco from 'monaco-editor';
 

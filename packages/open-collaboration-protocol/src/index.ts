@@ -21,6 +21,7 @@ export * from './utils/errors.js';
 export * from './utils/event.js';
 export * from './utils/info.js';
 export * from './utils/promise.js';
+export * from './utils/permissions.js';
 export * from './utils/types.js';
 export * from './utils/version.js';
 

@@ -1,5 +1,5 @@
 {
-  "name": "open-collaboration-yjs",
+  "name": "@hereugo/open-collaboration-yjs",
   "version": "0.3.1",
   "license": "MIT",
   "description": "Open Collaboration Yjs integration, part of the Open Collaboration Tools project",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "lib0": "^0.2.103",
-    "open-collaboration-protocol": "~0.3.0",
+    "@hereugo/open-collaboration-protocol": "~0.3.0",
     "y-protocols": "~1.0.6"
   },
   "peerDependencies": {

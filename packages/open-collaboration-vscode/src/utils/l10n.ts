@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import { l10n } from 'vscode';
-import { Info } from 'open-collaboration-protocol';
+import { Info } from '@hereugo/open-collaboration-protocol';
 
 export function localizeInfo(info: Info): string {
     switch (info.code) {

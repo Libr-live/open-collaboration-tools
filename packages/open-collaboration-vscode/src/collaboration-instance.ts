@@ -4,13 +4,13 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { ProtocolBroadcastConnection, Deferred, DisposableCollection } from 'open-collaboration-protocol';
+import { ProtocolBroadcastConnection, Deferred, DisposableCollection, encodeUserPermission, getUserPermissionKey, resolveReadonly } from '@hereugo/open-collaboration-protocol';
 import * as vscode from 'vscode';
 import * as Y from 'yjs';
 import * as awarenessProtocol from 'y-protocols/awareness';
-import * as types from 'open-collaboration-protocol';
+import * as types from '@hereugo/open-collaboration-protocol';
 import { FileSystemManager } from './collaboration-file-system.js';
-import { LOCAL_ORIGIN, OpenCollaborationYjsProvider, YTextChange, YjsNormalizedTextDocument } from 'open-collaboration-yjs';
+import { LOCAL_ORIGIN, OpenCollaborationYjsProvider, YTextChange, YjsNormalizedTextDocument } from '@hereugo/open-collaboration-yjs';
 import debounce from 'lodash/debounce.js';
 import throttle from 'lodash/throttle.js';
 import { inject, injectable, postConstruct } from 'inversify';
@@ -189,9 +189,15 @@ export class CollaborationInstance implements vscode.Disposable {
     private throttles = new Map<string, () => void>();
     private yjsDocuments = new Map<string, YjsNormalizedTextDocument>();
     private _permissions: types.Permissions = { readonly: false };
+    private userPermissions = new Map<string, boolean>();
+    private effectiveReadonly = false;
 
     get permissions(): types.Permissions {
         return this._permissions;
+    }
+
+    get userReadonly(): boolean {
+        return this.effectiveReadonly;
     }
 
     private _following?: string;
@@ -249,6 +255,14 @@ export class CollaborationInstance implements vscode.Disposable {
 
     get serverUrl(): string {
         return this.options.serverUrl;
+    }
+
+    getUserReadonly(peerId: string): boolean | undefined {
+        return this.userPermissions.get(peerId);
+    }
+
+    getEffectiveReadonlyForUser(peerId: string): boolean {
+        return resolveReadonly(this.buildPermissionsPayload(), peerId);
     }
 
     @inject(CollaborationInstanceOptions)
@@ -309,6 +323,7 @@ export class CollaborationInstance implements vscode.Disposable {
         });
         connection.room.onJoin(async (_, peer) => {
             if (this.host) {
+                this.ensureDefaultUserPermissions(peer.id);
                 // Only initialize the user if we are the host
                 const roots = vscode.workspace.workspaceFolders ?? [];
                 const initData: types.InitData = {
@@ -316,7 +331,7 @@ export class CollaborationInstance implements vscode.Disposable {
                     host: await this.identity.promise,
                     guests: Array.from(this.peers.values()).map(e => e.peer),
                     capabilities: {},
-                    permissions: this._permissions,
+                    permissions: this.buildPermissionsPayload(),
                     workspace: {
                         name: vscode.workspace.name ?? 'Collaboration',
                         folders: roots.map(e => e.name)
@@ -349,8 +364,7 @@ export class CollaborationInstance implements vscode.Disposable {
             }
         });
         connection.room.onPermissions((_, permissions) => {
-            this._permissions = permissions;
-            this.fileSystemManager?.registerFileSystemProvider(permissions.readonly);
+            void this.applyPermissionsUpdate(permissions);
         });
         connection.peer.onInfo((_, peer) => {
             this.yjsAwareness.setLocalStateField('peer', peer.id);
@@ -574,9 +588,38 @@ export class CollaborationInstance implements vscode.Disposable {
         }
     }
 
+    private buildPermissionsPayload(): types.Permissions {
+        const permissions: types.Permissions = {
+            ...this._permissions
+        };
+        for (const [peerId, readonly] of this.userPermissions) {
+            permissions[getUserPermissionKey(peerId)] = encodeUserPermission(readonly);
+        }
+        return permissions;
+    }
+
+    private async applyPermissionsUpdate(permissions: types.Permissions): Promise<void> {
+        this._permissions = permissions;
+        const peer = await this.identity.promise;
+        const readonly = resolveReadonly(permissions, peer.id);
+        this.effectiveReadonly = readonly;
+        this.fileSystemManager?.registerFileSystemProvider(readonly);
+    }
+
+    private ensureDefaultUserPermissions(peerId: string): void {
+        if (!this.userPermissions.has(peerId)) {
+            this.userPermissions.set(peerId, true);
+        }
+    }
+
+    setUserPermissions(peerId: string, readonly: boolean): void {
+        this.userPermissions.set(peerId, readonly);
+        this.connection.room.updatePermissions(this.buildPermissionsPayload());
+    }
+
     setPermissions(permissions: types.Permissions): void {
         this._permissions = permissions;
-        this.connection.room.updatePermissions(this._permissions);
+        this.connection.room.updatePermissions(this.buildPermissionsPayload());
     }
 
     async leave(): Promise<void> {
@@ -1046,8 +1089,7 @@ export class CollaborationInstance implements vscode.Disposable {
         for (const peer of [data.host, ...data.guests]) {
             this.peers.set(peer.id, new DisposablePeer(this.yjsAwareness, peer));
         }
-        this._permissions = data.permissions;
-        this.fileSystemManager.registerFileSystemProvider(data.permissions.readonly);
+        await this.applyPermissionsUpdate(data.permissions);
         this.onDidUsersChangeEmitter.fire();
         this._ready.resolve();
     }

@@ -6,8 +6,9 @@
 
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { Authentication, CreateRoomRequest, fromEncodedOCPMessage, JoinRoomRequest, JoinSessionRequest, OCPRequest, OnInitNotification, OpenDocument, toEncodedOCPMessage, UpdateDocumentContent, UpdateTextSelection } from 'open-collaboration-service-process';
-import { Deferred } from 'open-collaboration-protocol';
+import { Authentication, CreateRoomRequest, fromEncodedOCPMessage, JoinRoomRequest, JoinSessionRequest, OCPRequest, OnInitNotification, OpenDocument, toEncodedOCPMessage, UpdateDocumentContent, UpdateTextSelection } from '@hereugo/open-collaboration-service-process';
+import { Deferred, type InitData } from '@hereugo/open-collaboration-protocol';
+import type { SessionData } from '@hereugo/open-collaboration-service-process';
 import { createMessageConnection, MessageConnection, StreamMessageReader, StreamMessageWriter } from 'vscode-jsonrpc/node.js';
 
 const SERVER_ADDRESS = 'http://localhost:8100';
@@ -72,7 +73,7 @@ describe('Service Process', () => {
         const selectionArived = new Deferred();
         let hostId: string = '';
 
-        host.communicationHandler.onNotification(Authentication, (token) => {
+        host.communicationHandler.onNotification(Authentication, (token: string) => {
             makeSimpleLoginRequest(token, 'host');
         });
         host.communicationHandler.onRequest(JoinSessionRequest, () => {
@@ -100,19 +101,19 @@ describe('Service Process', () => {
 
         // Setup guest message handlers
         const initDeferred = new Deferred();
-        guest.communicationHandler.onNotification(Authentication, (token) => {
+        guest.communicationHandler.onNotification(Authentication, (token: string) => {
             makeSimpleLoginRequest(token, 'guest');
         });
-        guest.communicationHandler.onNotification(OnInitNotification, (initData) => {
+        guest.communicationHandler.onNotification(OnInitNotification, (initData: InitData) => {
             hostId = initData.host.id;
             initDeferred.resolve();
         });
 
         // room creation
-        const {roomId} = await host.communicationHandler.sendRequest(CreateRoomRequest, {name: 'test', folders: ['testFolder']});
+        const {roomId} = await host.communicationHandler.sendRequest(CreateRoomRequest, {name: 'test', folders: ['testFolder']}) as SessionData;
         expect(roomId).toBeDefined();
 
-        const {roomId: guestRoomId} = await guest.communicationHandler.sendRequest(JoinRoomRequest, roomId);
+        const {roomId: guestRoomId} = await guest.communicationHandler.sendRequest(JoinRoomRequest, roomId) as SessionData;
         expect(guestRoomId).toEqual(roomId);
 
         // await until guest is initialized

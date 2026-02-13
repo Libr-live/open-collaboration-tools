@@ -4,7 +4,7 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { Deferred } from 'open-collaboration-protocol';
+import { Deferred } from '@hereugo/open-collaboration-protocol';
 import type { IDocumentSync } from './document-sync.js';
 
 /**

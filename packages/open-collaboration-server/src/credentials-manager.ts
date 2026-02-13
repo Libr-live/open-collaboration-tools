@@ -9,7 +9,7 @@ import { User, isUser } from './types.js';
 import { UserManager } from './user-manager.js';
 import * as jose from 'jose';
 import { nanoid, customAlphabet } from 'nanoid';
-import { Disposable, Emitter, Event } from 'open-collaboration-protocol';
+import { Disposable, Emitter, Event } from '@hereugo/open-collaboration-protocol';
 import { Logger } from './utils/logging.js';
 import { UserInfo } from './auth-endpoints/auth-endpoint.js';
 import { Configuration } from './utils/configuration.js';

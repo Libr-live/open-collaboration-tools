@@ -6,7 +6,7 @@
 
 import { inject, injectable } from 'inversify';
 import { type Express } from 'express';
-import { Emitter, FormAuthProvider, Info } from 'open-collaboration-protocol';
+import { Emitter, FormAuthProvider, Info } from '@hereugo/open-collaboration-protocol';
 import { AuthEndpoint, AuthSuccessEvent } from './auth-endpoint.js';
 import { Logger } from '../utils/logging.js';
 import { Configuration } from '../utils/configuration.js';

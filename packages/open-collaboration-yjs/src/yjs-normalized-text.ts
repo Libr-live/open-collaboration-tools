@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import * as Y from 'yjs';
-import * as types from 'open-collaboration-protocol';
+import * as types from '@hereugo/open-collaboration-protocol';
 
 export interface YTextChange {
     start: number;

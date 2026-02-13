@@ -198,6 +198,29 @@ export class Commands {
     }
 
     async updatePermissions(instance: CollaborationInstance): Promise<void> {
+        const scopes: Array<QuickPickItem<'session' | 'user'>> = [
+            {
+                key: 'session',
+                label: '$(settings-gear) ' + vscode.l10n.t('Session Permissions'),
+                detail: vscode.l10n.t('Update default permissions for all participants')
+            },
+            {
+                key: 'user',
+                label: '$(account) ' + vscode.l10n.t('User Permissions'),
+                detail: vscode.l10n.t('Set per-user editing permissions')
+            }
+        ];
+        const scope = await showQuickPick(scopes, {
+            placeholder: vscode.l10n.t('Select Permissions Scope')
+        });
+        if (scope === 'session') {
+            await this.updateSessionPermissions(instance);
+        } else if (scope === 'user') {
+            await this.updateUserPermissions(instance);
+        }
+    }
+
+    private async updateSessionPermissions(instance: CollaborationInstance): Promise<void> {
         const permissions: Array<QuickPickItem<'readonly' | 'readwrite'>> = [];
         if (instance.permissions.readonly) {
             permissions.push({
@@ -220,5 +243,33 @@ export class Commands {
         } else if (result === 'readwrite') {
             instance.setPermissions({ readonly: false });
         }
+    }
+
+    private async updateUserPermissions(instance: CollaborationInstance): Promise<void> {
+        const own = await instance.ownUserData;
+        const users = (await instance.connectedUsers).filter(user => user.id !== own.id);
+        if (users.length === 0) {
+            vscode.window.showInformationMessage(vscode.l10n.t('No other users are connected.'));
+            return;
+        }
+        const items: Array<QuickPickItem<string>> = users.map(user => {
+            const effectiveReadonly = instance.getEffectiveReadonlyForUser(user.id);
+            const label = user.email ? `${user.name} (${user.email})` : user.name;
+            return {
+                key: user.id,
+                label,
+                detail: effectiveReadonly
+                    ? vscode.l10n.t('Read-only')
+                    : vscode.l10n.t('Read-write')
+            };
+        });
+        const selected = await showQuickPick(items, {
+            placeholder: vscode.l10n.t('Select User')
+        });
+        if (!selected) {
+            return;
+        }
+        const currentReadonly = instance.getEffectiveReadonlyForUser(selected);
+        instance.setUserPermissions(selected, !currentReadonly);
     }
 }

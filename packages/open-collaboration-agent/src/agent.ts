@@ -5,8 +5,8 @@
 // ******************************************************************************
 
 import { webcrypto } from 'node:crypto';
-import { ConnectionProvider, SocketIoTransportProvider, initializeProtocol } from 'open-collaboration-protocol';
-import type { ConnectionProviderOptions, Peer } from 'open-collaboration-protocol';
+import { ConnectionProvider, SocketIoTransportProvider, initializeProtocol } from '@hereugo/open-collaboration-protocol';
+import type { ConnectionProviderOptions, Peer } from '@hereugo/open-collaboration-protocol';
 import { DocumentSync, DocumentChange } from './document-sync.js';
 import { executePrompt } from './prompt.js';
 import { animateLoadingIndicator, applyChanges } from './agent-util.js';

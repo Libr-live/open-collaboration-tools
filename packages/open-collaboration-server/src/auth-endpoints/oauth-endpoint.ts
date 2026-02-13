@@ -6,7 +6,7 @@
 
 import { inject, injectable, postConstruct } from 'inversify';
 import { type Express } from 'express';
-import { AuthProvider, Emitter, Event, Info } from 'open-collaboration-protocol';
+import { AuthProvider, Emitter, Event, Info } from '@hereugo/open-collaboration-protocol';
 import { AuthEndpoint, AuthSuccessEvent, UserInfo } from './auth-endpoint.js';
 import passport from 'passport';
 import { Strategy as GithubStrategy } from 'passport-github';

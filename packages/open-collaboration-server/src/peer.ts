@@ -6,7 +6,7 @@
 
 import { inject, injectable, postConstruct } from 'inversify';
 import { nanoid } from 'nanoid';
-import * as protocol from 'open-collaboration-protocol';
+import * as protocol from '@hereugo/open-collaboration-protocol';
 import { Channel } from './channel.js';
 import { MessageRelay } from './message-relay.js';
 import { RoomManager } from './room-manager.js';

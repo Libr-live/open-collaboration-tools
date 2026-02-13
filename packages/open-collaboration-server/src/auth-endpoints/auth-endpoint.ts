@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import type { Express } from 'express';
-import { AuthProvider, Event } from 'open-collaboration-protocol';
+import { AuthProvider, Event } from '@hereugo/open-collaboration-protocol';
 import { User } from '../types.js';
 
 export type UserInfo = Omit<User, 'id'>;

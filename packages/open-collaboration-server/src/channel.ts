@@ -6,7 +6,7 @@
 
 import { Socket } from 'socket.io';
 import * as ws from 'ws';
-import { Disposable, Emitter, Encoding, Event, DisposableCollection, Message } from 'open-collaboration-protocol';
+import { Disposable, Emitter, Encoding, Event, DisposableCollection, Message } from '@hereugo/open-collaboration-protocol';
 
 export class Channel {
 

@@ -7,7 +7,7 @@
 import 'reflect-metadata';
 import * as crypto from 'node:crypto';
 import * as vscode from 'vscode';
-import { initializeProtocol } from 'open-collaboration-protocol';
+import { initializeProtocol } from '@hereugo/open-collaboration-protocol';
 import { CollaborationInstance } from './collaboration-instance.js';
 import { CollaborationRoomService } from './collaboration-room-service.js';
 import { closeSharedEditors, removeWorkspaceFolders } from './utils/workspace.js';

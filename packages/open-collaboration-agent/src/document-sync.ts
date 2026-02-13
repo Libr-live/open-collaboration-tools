@@ -4,8 +4,8 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import type { ClientAwareness, ProtocolBroadcastConnection } from 'open-collaboration-protocol';
-import { OpenCollaborationYjsProvider, LOCAL_ORIGIN } from 'open-collaboration-yjs';
+import type { ClientAwareness, ProtocolBroadcastConnection } from '@hereugo/open-collaboration-protocol';
+import { OpenCollaborationYjsProvider, LOCAL_ORIGIN } from '@hereugo/open-collaboration-yjs';
 import * as Y from 'yjs';
 import * as awarenessProtocol from 'y-protocols/awareness';
 

@@ -4,7 +4,7 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import * as types from 'open-collaboration-protocol';
+import * as types from '@hereugo/open-collaboration-protocol';
 import * as awarenessProtocol from 'y-protocols/awareness';
 
 type PeerDecorationOptions = {

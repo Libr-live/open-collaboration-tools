@@ -4,7 +4,7 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { AuthProvider } from 'open-collaboration-protocol';
+import { AuthProvider } from '@hereugo/open-collaboration-protocol';
 import { Strategy } from 'passport';
 import { OAuthEndpoint, ThirdParty } from './oauth-endpoint.js';
 import { VerifyCallback } from 'passport-oauth2';

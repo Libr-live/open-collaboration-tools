@@ -4,7 +4,7 @@
 // terms of the MIT License, which is available in the project root.
 // ******************************************************************************
 
-import { ProtocolBroadcastConnection } from 'open-collaboration-protocol';
+import { ProtocolBroadcastConnection } from '@hereugo/open-collaboration-protocol';
 import * as vscode from 'vscode';
 import * as Y from 'yjs';
 import { CollaborationUri } from './utils/uri.js';

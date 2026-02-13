@@ -9,7 +9,7 @@ import * as crypto from 'node:crypto';
 import { program } from 'commander';
 import serverModule from './inversify-module.js';
 import { Container } from 'inversify';
-import { initializeProtocol } from 'open-collaboration-protocol';
+import { initializeProtocol } from '@hereugo/open-collaboration-protocol';
 import { CollaborationServer } from './collaboration-server.js';
 import { ConfigurationFile } from './utils/configuration.js';
 import pck from '../package.json' with { type: 'json' };
