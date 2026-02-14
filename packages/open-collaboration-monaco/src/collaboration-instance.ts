@@ -40,6 +40,8 @@ export class CollaborationInstance implements Disposable {
     protected readonly documentDisposables = new Map<string, DisposableCollection>();
     protected readonly peers = new Map<string, DisposablePeer>();
     protected readonly throttles = new Map<string, () => void>();
+    protected readonly resyncTimestamps = new Map<string, number>();
+    protected resyncCooldownMs = 1500;
     protected readonly decorations = new Map<DisposablePeer, monaco.editor.IEditorDecorationsCollection>();
     protected readonly usersChangedCallbacks: UsersChangeEvent[] = [];
     protected readonly fileNameChangeCallbacks: FileNameChangeEvent[] = [];
@@ -113,6 +115,15 @@ export class CollaborationInstance implements Disposable {
             resyncTimer: 10_000
         });
         this.yjsProvider.connect();
+        this.connection.onReconnect(() => {
+            this.yjsProvider.connect();
+            if (!this.isHost && this.options.editor) {
+                const model = this.options.editor.getModel();
+                if (model) {
+                    void this.resyncActiveDocument(model);
+                }
+            }
+        });
 
         this._fileName = 'myFile.txt';
         this._workspaceName = this.roomId;
@@ -444,6 +455,12 @@ export class CollaborationInstance implements Disposable {
                 ytextContent = yjsText.toString();
             } else {
                 ytextContent = await this.readFile();
+                if (yjsText.toString() !== ytextContent) {
+                    this.yjs.transact(() => {
+                        yjsText.delete(0, yjsText.length);
+                        yjsText.insert(0, ytextContent);
+                    });
+                }
                 if (this._fileName !== this.previousFileName) {
                     this.previousFileName = this._fileName;
                     this.notifyFileNameChanged(this._fileName);
@@ -451,10 +468,42 @@ export class CollaborationInstance implements Disposable {
             }
             if (text !== ytextContent) {
                 this.yjsMutex(() => {
+                    this.stopPropagation = true;
                     document.setValue(ytextContent);
+                    this.stopPropagation = false;
                 });
             }
             this.registerTextObserver(path, document, yjsText);
+        }
+    }
+
+    private async resyncActiveDocument(document: monaco.editor.ITextModel): Promise<void> {
+        if (this.isHost) {
+            return;
+        }
+        const path = this.currentPath ?? this.getProtocolPath(this.getResourceUri(`${this._workspaceName}/${this._fileName}`));
+        if (!path) {
+            return;
+        }
+        const now = Date.now();
+        const lastResync = this.resyncTimestamps.get(path) ?? 0;
+        if (now - lastResync < this.resyncCooldownMs) {
+            return;
+        }
+        this.resyncTimestamps.set(path, now);
+        this.currentPath = path;
+        const yjsText = this.yjs.getText(path);
+        const hostContent = await this.readFile();
+        if (yjsText.toString() !== hostContent) {
+            this.yjs.transact(() => {
+                yjsText.delete(0, yjsText.length);
+                yjsText.insert(0, hostContent);
+            });
+        }
+        if (document.getValue() !== hostContent) {
+            this.stopPropagation = true;
+            document.setValue(hostContent);
+            this.stopPropagation = false;
         }
     }
 
@@ -525,6 +574,10 @@ export class CollaborationInstance implements Disposable {
                     const yjsText = this.yjs.getText(path);
                     const newContent = yjsText.toString();
                     if (newContent !== document.getValue()) {
+                        if (!this.isHost) {
+                            void this.resyncActiveDocument(document);
+                            return;
+                        }
                         this.updateDocumentContent(document, newContent);
                     }
                 });
