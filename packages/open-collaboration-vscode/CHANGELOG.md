@@ -1,39 +1,38 @@
-# Change Log of `open-collaboration-tools`
+# Change Log of `libr-live-extension`
 
-## v0.3.4 (Jul. 2025)
+## v1.0.13 (Jan. 2026)
 
-- Fixed the extension to work in Code-Server applications
+- Adjust Marketplace-facing wording to avoid blocked keywords.
 
-## v0.3.3 (Jun. 2025)
+## v1.0.5 (Jan. 2026)
 
-- Updated our extension logo again
+## v1.0.6 (Jan. 2026)
 
-## v0.3.2 (Jun. 2025)
+- Reduce bundled dependencies flagged by Marketplace validation.
 
-- Updated our extension logo to match the new OCT design
+## v1.0.7 (Jan. 2026)
 
-## v0.3.1 (Apr. 2025)
+- Clarify Marketplace metadata and messaging.
 
-- Shared documents are now using normalized line endings (`\n`) to prevent cross-platform issues ([#127](https://github.com/eclipse-oct/open-collaboration-tools/pull/127)).
+## v1.0.8 (Jan. 2026)
 
-## v0.3.0 (Apr. 2025)
+- Remove third-party brand references from Marketplace-facing metadata and UI strings.
 
-- Session peers should now appear more consistently in the session view ([#40](https://github.com/eclipse-oct/open-collaboration-tools/pull/40)).
-- The extension will no longer corrupt multi-root workspaces ([#101](https://github.com/eclipse-oct/open-collaboration-tools/pull/101)).
-- Unverified login will now be handled inside of VS Code ([#98](https://github.com/eclipse-oct/open-collaboration-tools/pull/98)).
-- Refactored the resyncing mechanism to prevent desync ([#107](https://github.com/eclipse-oct/open-collaboration-tools/pull/107)).
-- Support readonly workspace sessions ([#114](https://github.com/eclipse-oct/open-collaboration-tools/pull/114)).
-- Session codes can now contain the server URL ([#92](github.com/eclipse-oct/open-collaboration-tools/pull/92)).
+## v1.0.4 (Jan. 2026)
+- Documentation updates.
 
-## v0.2.0 (Aug. 2024)
+## v1.0.3 (Jan. 2026)
 
-- Added support for VSCode Web
-- Redesigned the login and session join mechanism
-- Improved workspace file handling
-- Added localizations for all commonly used VS Code languages
-- Enabled sharing binary files
-- Fixed a few edge cases regarding editor desync
+- Updated documentation and branding links.
 
-## v0.1.0 (Jul. 2024)
+## v1.0.2 (Jan. 2026)
 
-- Initial preview release
+- Updated README and metadata to align with Libr Live branding and product messaging.
+
+## v1.0.1 (Jan. 2026)
+
+- Metadata and packaging cleanup to satisfy Marketplace validation.
+
+## v1.0.0 (Jan. 2026)
+
+- Initial public release of the Libr Live Extension.

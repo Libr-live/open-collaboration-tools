@@ -1,47 +1,38 @@
 {
-  "name": "open-collaboration-tools",
-  "displayName": "Open Collaboration Tools",
-  "version": "0.3.4",
+  "name": "libr-live-extension-collaboration-tool",
+  "displayName": "Libr Live Extension",
+  "version": "2.0.0",
   "license": "MIT",
-  "description": "Connect with others and live-share your code in real-time collaboration sessions",
-  "publisher": "typefox",
+  "description": "Real-time collaboration and shared workspaces with Libr Live.",
+  "publisher": "LibrLive",
   "categories": [
     "Other"
   ],
   "keywords": [
     "collaboration",
-    "share",
-    "live-share",
-    "real-time",
-    "team",
-    "co-edit",
-    "pair-programming"
+    "pair programming",
+    "workspace",
+    "real-time collaboration",
+    "remote"
   ],
-  "icon": "data/oct-logo.png",
-  "galleryBanner": {
-    "color": "#CBC9E8",
-    "theme": "light"
-  },
-  "homepage": "https://www.open-collab.tools/",
-  "bugs": {
-    "url": "https://github.com/eclipse-oct/open-collaboration-tools/issues"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eclipse-oct/open-collaboration-tools",
-    "directory": "packages/open-collaboration-vscode"
+    "url": "https://github.com/Libr-live/libr-live-extension"
   },
+  "icon": "data/libr-logo.png",
+  "galleryBanner": {
+    "color": "#FFFFFF",
+    "theme": "light"
+  },
+  "homepage": "https://libr.live/",
   "author": {
-    "name": "TypeFox",
-    "url": "https://www.typefox.io"
+    "name": "Libr Live",
+    "url": "https://libr.live/"
   },
   "main": "./dist/extension.js",
-  "browser": "./dist/extension.web.js",
   "l10n": "./l10n",
   "engines": {
-    "vscode": "^1.73.0",
-    "node": ">=20.10.0",
-    "npm": ">=10.2.3"
+    "vscode": "^1.73.0"
   },
   "activationEvents": [
     "onStartupFinished",
@@ -59,12 +50,12 @@
         "formatting": {
           "label": "${path}",
           "separator": "/",
-          "workspaceSuffix": "Open Collaboration Tools"
+          "workspaceSuffix": "Libr Live Extension"
         }
       }
     ],
     "configuration": {
-      "title": "Open Collaboration Tools",
+      "title": "Libr Live Extension",
       "properties": {
         "oct.serverUrl": {
           "type": "string",
@@ -76,14 +67,13 @@
           "default": true,
           "description": "%oct.alwaysAskToOverrideServerUrl%"
         },
-        "oct.webClientUrl": {
-          "type": "string",
-          "default": "https://www.open-collab.tools/playground/?room=${roomId}",
-          "description": "%oct.webClientUrl%"
-        },
         "oct.joinAcceptMode": {
           "type": "string",
-          "enum": ["prompt", "allowlist", "auto"],
+          "enum": [
+            "prompt",
+            "allowlist",
+            "auto"
+          ],
           "default": "prompt",
           "markdownDescription": "%oct.joinAcceptMode%",
           "enumItemLabels": [
@@ -164,8 +154,8 @@
     "commands": [
       {
         "command": "oct.dev.fuzzing",
-        "title": "Run Fuzzing Test",
-        "category": "Open Collaboration Tools Developer",
+        "title": "Run Stress Test",
+        "category": "Libr Live Extension Developer",
         "enablement": "oct.dev"
       },
       {
@@ -181,40 +171,40 @@
       {
         "command": "oct.followPeer",
         "title": "%oct.followPeer%",
-        "category": "Open Collaboration Tools",
+        "category": "Libr Live Extension",
         "icon": "$(eye)"
       },
       {
         "command": "oct.stopFollowPeer",
         "title": "%oct.stopFollowPeer%",
-        "category": "Open Collaboration Tools",
+        "category": "Libr Live Extension",
         "icon": "$(eye-closed)"
       },
       {
         "command": "oct.closeConnection",
         "title": "%oct.closeConnection%",
-        "category": "Open Collaboration Tools",
+        "category": "Libr Live Extension",
         "icon": "$(close)",
         "enablement": "oct.connection"
       },
       {
         "command": "oct.joinRoom",
         "title": "%oct.joinRoom%",
-        "category": "Open Collaboration Tools",
+        "category": "Libr Live Extension",
         "icon": "$(vm-connect)",
         "enablement": "!oct.connection"
       },
       {
         "command": "oct.createRoom",
         "title": "%oct.createRoom%",
-        "category": "Open Collaboration Tools",
+        "category": "Libr Live Extension",
         "icon": "$(vm-connect)",
         "enablement": "workbenchState != empty && !oct.connection"
       },
       {
         "command": "oct.signOut",
         "title": "%oct.signOut%",
-        "category": "Open Collaboration Tools",
+        "category": "Libr Live Extension",
         "icon": "$(sign-out)"
       }
     ],
@@ -272,6 +262,8 @@
   "scripts": {
     "vscode:prepublish": "npm run check-types && tsx ./scripts/esbuild.js --production",
     "package": "vsce package --no-dependencies",
+    "publish": "vsce publish --no-dependencies",
+    "login": "vsce login LibrLive",
     "build": "npm run check-types && tsx ./scripts/esbuild.js",
     "watch": "tsx ./scripts/esbuild.js --watch",
     "check-types": "tsc --noEmit",
@@ -287,11 +279,9 @@
     "@hereugo/open-collaboration-protocol": "0.3.1",
     "lodash": "~4.17.21",
     "nanoid": "~5.1.5",
-    "node-fetch": "~3.3.2",
     "minimatch": "^10.1.1"
   },
   "devDependencies": {
-    "@types/node-fetch": "~2.6.12",
     "@types/vscode": "^1.73.0",
     "@vscode/l10n-dev": "~0.0.35",
     "@vscode/vsce": "^3.0.0",
