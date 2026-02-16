@@ -11,6 +11,7 @@ type PeerDecorationOptions = {
     selectionClassName: string;
     cursorClassName: string;
     cursorInvertedClassName: string;
+    tagVisibleClassName: string;
 };
 
 export class DisposablePeer {
@@ -57,6 +58,7 @@ export class DisposablePeer {
         const cursorClassName = `${className}-cursor`;
         const cursorInvertedClassName = `${className}-cursor-inverted`;
         const selectionClassName = `${className}-selection`;
+        const tagVisibleClassName = `${className}-tag-visible`;
         const cursorCss = `.${cursorClassName} {
             background-color: ${colorCss} !important;
             border-color: ${colorCss} !important;
@@ -71,19 +73,35 @@ export class DisposablePeer {
         const cursorAfterCss = `.${cursorClassName}::after {
             content: "${this.peer.name}";
             position: absolute;
-            transform: translateY(-100%);
+            transform: translateY(-100%) translateY(2px);
             padding: 0 4px;
             border-radius: 4px 4px 4px 0px;
             background-color: ${colorCss};
+            opacity: 0;
+            transition: opacity 160ms ease, transform 160ms ease;
+            pointer-events: auto;
+            white-space: nowrap;
         }`;
         generateCSS(cursorAfterCss);
+        const cursorAfterVisibleCss = `.${cursorClassName}.${tagVisibleClassName}::after,
+        .${cursorClassName}:hover::after {
+            opacity: 1;
+            transform: translateY(-100%) translateY(0px);
+        }`;
+        generateCSS(cursorAfterVisibleCss);
         const cursorAfterInvertedCss = `.${cursorClassName}.${cursorInvertedClassName}::after {
-            transform: translateY(100%);
+            transform: translateY(100%) translateY(-2px);
             margin-top: -2px;
             border-radius: 0px 4px 4px 4px;
             z-index: 1;
         }`;
         generateCSS(cursorAfterInvertedCss);
+        const cursorAfterInvertedVisibleCss = `.${cursorClassName}.${cursorInvertedClassName}.${tagVisibleClassName}::after,
+        .${cursorClassName}.${cursorInvertedClassName}:hover::after {
+            opacity: 1;
+            transform: translateY(100%) translateY(0px);
+        }`;
+        generateCSS(cursorAfterInvertedVisibleCss);
         const selectionCss = `.${selectionClassName} {
             background: ${colorCss} !important;
             opacity: 0.25;
@@ -92,7 +110,8 @@ export class DisposablePeer {
         return {
             cursorClassName,
             cursorInvertedClassName,
-            selectionClassName
+            selectionClassName,
+            tagVisibleClassName
         };
     }
 
@@ -100,16 +119,16 @@ export class DisposablePeer {
 
 let colorIndex = 0;
 const defaultColors: Array<[number, number, number] | string> = [
-    'yellow', // Yellow
-    'green', // Green
-    'magenta', // Magenta
-    'lightGreen', // Light green
-    [255, 178, 123], // Light orange
-    [255, 157, 242], // Light magenta
-    [92, 45, 145], // Purple
-    [0, 178, 148], // Light teal
-    [255, 241, 0], // Light yellow
-    [180, 160, 255] // Light purple
+    '#8AB4F8',
+    '#81C995',
+    '#FDD663',
+    '#F28B82',
+    '#C58AF9',
+    '#9AD0F5',
+    '#A7F3D0',
+    '#FFD6A5',
+    '#FFB3C1',
+    '#B9F6CA'
 ];
 
 const knownColors = new Set<string>();

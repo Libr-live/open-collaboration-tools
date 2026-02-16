@@ -47,6 +47,9 @@ export class CollaborationInstance implements Disposable {
     protected readonly fileNameChangeCallbacks: FileNameChangeEvent[] = [];
     protected _permissions: types.Permissions = { readonly: false };
     protected effectiveReadonly = false;
+    protected readonly peerTagVisibility = new Map<string, boolean>();
+    protected readonly peerTagTimers = new Map<string, ReturnType<typeof setTimeout>>();
+    protected tagHideDelayMs = 2000;
 
     protected currentPath?: string;
     protected stopPropagation = false;
@@ -168,6 +171,7 @@ export class CollaborationInstance implements Disposable {
             const disposable = this.peers.get(peer.id);
             if (disposable) {
                 this.peers.delete(peer.id);
+                this.clearPeerTagState(peer.id);
                 this.notifyUsersChanged();
             }
             this.rerenderPresence();
@@ -332,8 +336,9 @@ export class CollaborationInstance implements Disposable {
             this.rerenderPresence();
         }, 2000);
 
-        this.yjsAwareness.on('change', async (_: unknown, origin: string) => {
+        this.yjsAwareness.on('change', async (change: { added: number[]; updated: number[]; removed: number[] }, origin: string) => {
             if (origin !== LOCAL_ORIGIN) {
+                this.markActivePeers(change);
                 this.updateFollow();
                 this.rerenderPresence();
                 awarenessDebounce();
@@ -364,6 +369,50 @@ export class CollaborationInstance implements Disposable {
                 }
             }
         }
+    }
+
+    protected markActivePeers(change: { added: number[]; updated: number[]; removed: number[] }): void {
+        const states = this.yjsAwareness.getStates() as Map<number, types.ClientAwareness>;
+        for (const clientId of [...change.added, ...change.updated]) {
+            if (clientId === this.yjs.clientID) {
+                continue;
+            }
+            const state = states.get(clientId);
+            if (!state?.peer) {
+                continue;
+            }
+            this.setPeerTagVisible(state.peer, true);
+            this.resetPeerTagTimer(state.peer);
+        }
+    }
+
+    protected setPeerTagVisible(peerId: string, visible: boolean): void {
+        const current = this.peerTagVisibility.get(peerId) === true;
+        if (current !== visible) {
+            this.peerTagVisibility.set(peerId, visible);
+        }
+    }
+
+    protected resetPeerTagTimer(peerId: string): void {
+        const existing = this.peerTagTimers.get(peerId);
+        if (existing) {
+            clearTimeout(existing);
+        }
+        const timeout = setTimeout(() => {
+            this.peerTagVisibility.set(peerId, false);
+            this.peerTagTimers.delete(peerId);
+            this.rerenderPresence();
+        }, this.tagHideDelayMs);
+        this.peerTagTimers.set(peerId, timeout);
+    }
+
+    protected clearPeerTagState(peerId: string): void {
+        const existing = this.peerTagTimers.get(peerId);
+        if (existing) {
+            clearTimeout(existing);
+            this.peerTagTimers.delete(peerId);
+        }
+        this.peerTagVisibility.delete(peerId);
     }
 
     protected async followSelection(selection: types.ClientTextSelection): Promise<void> {
@@ -658,6 +707,9 @@ export class CollaborationInstance implements Disposable {
                     const contentClassNames: string[] = [peer.decoration.cursorClassName];
                     if (inverted) {
                         contentClassNames.push(peer.decoration.cursorInvertedClassName);
+                    }
+                    if (this.peerTagVisibility.get(peer.peer.id)) {
+                        contentClassNames.push(peer.decoration.tagVisibleClassName);
                     }
                     this.setDecorations(peer, [{
                         range,
