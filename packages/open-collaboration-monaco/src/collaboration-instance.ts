@@ -556,7 +556,8 @@ export class CollaborationInstance implements Disposable {
             this.yjsMutex(() => {
                 const ytext = this.yjs.getText(path);
                 this.yjs.transact(() => {
-                    for (const change of event.changes) {
+                    const sortedChanges = [...event.changes].sort((a, b) => b.rangeOffset - a.rangeOffset);
+                    for (const change of sortedChanges) {
                         ytext.delete(change.rangeOffset, change.rangeLength);
                         ytext.insert(change.rangeOffset, change.text);
                     }

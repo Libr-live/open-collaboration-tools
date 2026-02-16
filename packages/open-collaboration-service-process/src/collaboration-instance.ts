@@ -175,11 +175,20 @@ export class CollaborationInstance implements types.Disposable{
         if (changes.length === 0) {
             return;
         }
+        const sortedChanges = [...changes].sort((a, b) => {
+            const offsetDiff = b.startOffset - a.startOffset;
+            if (offsetDiff !== 0) {
+                return offsetDiff;
+            }
+            const aEnd = a.endOffset ?? a.startOffset;
+            const bEnd = b.endOffset ?? b.startOffset;
+            return bEnd - aEnd;
+        });
         this.yjsMutex.runExclusive(async () => {
             const yjsText = this.YjsDoc.getText(documentPath);
             this.YjsDoc.transact(() => {
-                for(const change of changes) {
-                    if(change.endOffset) {
+                for (const change of sortedChanges) {
+                    if (change.endOffset !== undefined) {
                         yjsText.delete(change.startOffset, change.endOffset - change.startOffset);
                     }
                     yjsText.insert(change.startOffset, change.text);

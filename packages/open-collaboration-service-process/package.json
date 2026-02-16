@@ -1,6 +1,6 @@
 {
   "name": "@hereugo/open-collaboration-service-process",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "description": "A service process for integrating non Typescript projects with the Open Collaboration Tools project",
   "files": [
