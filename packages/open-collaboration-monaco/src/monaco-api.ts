@@ -5,7 +5,7 @@
 // ******************************************************************************
 
 import { ConnectionProvider, SocketIoTransportProvider } from '@hereugo/open-collaboration-protocol';
-import { CollaborationInstance, UsersChangeEvent, FileNameChangeEvent } from './collaboration-instance.js';
+import { CollaborationInstance, FollowOptions, UsersChangeEvent, FileNameChangeEvent } from './collaboration-instance.js';
 import * as types from '@hereugo/open-collaboration-protocol';
 import { createRoom, joinRoom, login } from './collaboration-connection.js';
 import * as monaco from 'monaco-editor';
@@ -50,7 +50,7 @@ export type MonacoCollabApi = {
     onUsersChanged: (evt: UsersChangeEvent) => void
     onFileNameChange: (callback: FileNameChangeEvent) => void
     getCurrentConnection: () => types.ProtocolBroadcastConnection | undefined
-    followUser: (id?: string) => void
+    followUser: (id?: string, options?: FollowOptions) => void
     getFollowedUser: () => string | undefined
     setFileName: (fileName: string) => void
     getFileName: () => string | undefined
@@ -147,9 +147,9 @@ export function monacoCollab(options: MonacoCollabOptions): MonacoCollabApi {
         }
     };
 
-    const doFollowUser = (id?: string) => {
+    const doFollowUser = (id?: string, options?: FollowOptions) => {
         if (instance) {
-            instance.followUser(id);
+            instance.followUser(id, options);
         }
     };
 

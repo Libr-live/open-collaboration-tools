@@ -30,6 +30,10 @@ export interface CollaborationInstanceOptions {
     roomClaim: types.CreateRoomResponse | types.JoinRoomResponse;
 }
 
+export interface FollowOptions {
+    followViewport?: boolean;
+}
+
 export class CollaborationInstance implements Disposable {
     protected readonly yjs: Y.Doc = new Y.Doc();
     protected readonly yjsAwareness: awarenessProtocol.Awareness;
@@ -54,6 +58,7 @@ export class CollaborationInstance implements Disposable {
     protected currentPath?: string;
     protected stopPropagation = false;
     protected _following?: string;
+    protected followViewport = false;
     protected _fileName: string;
     protected previousFileName?: string;
     protected _workspaceName: string;
@@ -346,8 +351,11 @@ export class CollaborationInstance implements Disposable {
         });
     }
 
-    followUser(id?: string) {
+    followUser(id?: string, options?: FollowOptions) {
         this._following = id;
+        if (options?.followViewport !== undefined) {
+            this.followViewport = options.followViewport;
+        }
         if (id) {
             this.updateFollow();
         }
@@ -438,7 +446,7 @@ export class CollaborationInstance implements Disposable {
         }
 
         this.registerTextObserver(selection.path, this.options.editor.getModel()!, text);
-        if (uri && selection.visibleRanges && selection.visibleRanges.length > 0) {
+        if (this.followViewport && uri && selection.visibleRanges && selection.visibleRanges.length > 0) {
             const visibleRange = selection.visibleRanges[0];
             const range = new monaco.Range(visibleRange.start.line, visibleRange.start.character, visibleRange.end.line, visibleRange.end.character);
             this.options.editor && this.options.editor.revealRange(range);
