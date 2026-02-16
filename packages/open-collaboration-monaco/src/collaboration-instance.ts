@@ -515,6 +515,10 @@ export class CollaborationInstance implements Disposable {
 
         const resyncThrottle = this.getOrCreateThrottle(path, document);
         const observer = (textEvent: Y.YTextEvent) => {
+            if (textEvent.transaction.local) {
+                // Local changes already updated the model; avoid re-applying and shifting offsets.
+                return;
+            }
             this.yjsMutex(async () => {
                 if (this.options.editor) {
                     const changes = YTextChangeDelta.toChanges(textEvent.delta);
@@ -529,9 +533,11 @@ export class CollaborationInstance implements Disposable {
     }
 
     protected updateDocument(document: monaco.editor.ITextModel, edits: monaco.editor.IIdentifiedSingleEditOperation[]): void {
+        this.stopPropagation = true;
         document.pushStackElement();
         document.pushEditOperations(null, edits, () => null);
         document.pushStackElement();
+        this.stopPropagation = false;
     }
 
     private createEditsFromTextEvent(changes: YTextChange[], document: monaco.editor.ITextModel): monaco.editor.IIdentifiedSingleEditOperation[] {
