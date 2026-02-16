@@ -542,7 +542,14 @@ export class CollaborationInstance implements Disposable {
 
     private createEditsFromTextEvent(changes: YTextChange[], document: monaco.editor.ITextModel): monaco.editor.IIdentifiedSingleEditOperation[] {
         const edits: monaco.editor.IIdentifiedSingleEditOperation[] = [];
-        changes.forEach(change => {
+        const sortedChanges = [...changes].sort((a, b) => {
+            const startDiff = b.start - a.start;
+            if (startDiff !== 0) {
+                return startDiff;
+            }
+            return b.end - a.end;
+        });
+        sortedChanges.forEach(change => {
             const start = document.getPositionAt(change.start);
             const end = document.getPositionAt(change.end);
             edits.push({
