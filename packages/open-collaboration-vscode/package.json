@@ -1,7 +1,7 @@
 {
   "name": "libr-live-extension-collaboration-tool",
   "displayName": "Libr Live Extension",
-  "version": "2.0.9",
+  "version": "2.0.11",
   "license": "MIT",
   "description": "Real-time collaboration and shared workspaces with Libr Live",
   "publisher": "LibrLive",
